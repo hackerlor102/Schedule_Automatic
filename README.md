@@ -1,2 +1,2 @@
-# Qu-n-l-nh-n-s-
+# Quản lý nhân sự
 Hệ thống quản lý và xắp sếp việc làm cho nhân sự

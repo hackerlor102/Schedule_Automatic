@@ -1,0 +1,27 @@
+# DỮ LIỆU MẪU ĐĂNG KÝ CA LÀM VIỆC (THỨ 2 ĐẾN CHỦ NHẬT)
+# Quy định:
+# - Ca A: 8:00AM ~ 15:00PM (7h)
+# - Ca B: 15:00PM ~ 22:00PM (7h)
+# - Ca A+: 8:00AM ~ 12:00PM (4h)
+# - Ca B+: 18:00PM ~ 22:00PM (4h)
+# - Ca B1: 12:00PM ~ 18:00PM (6h)
+# - Ca A1: 8:00AM ~ 18:00PM (giới hạn 7h)
+# - Ca B2: 12:00PM ~ 22:00PM (giới hạn 7h)
+# - Khung giờ tự do: 8-11h30, 9-15h, 15-18h, 16-22h, 6-9h...
+# - Đăng ký 2 khung giờ trong cùng ngày: cách nhau bởi dấu '/' (vd: 12-15h / b+)
+# - o / off: Nghỉ ca
+
+[Pha chế]
+Vy: 8-11h30, b+, 8-9h, 15-18h, 16-22h, off, b+
+Ánh: B, off, off, 12-15h / b+, 6-9h, b+, a+
+Mai: b1, b1, b1, 9-12h, off, off, off
+Đạt: off, off, 9-15h, 12-15h / b+, off, a+, b2
+Phú: off, a1, b, a+, a1, b1, b1
+
+[Phục vụ]
+Hương: o, o, o, a, a+, b+, off
+Huy: o, b+, b+, o, b1, o, a
+Phương: b+, 8-11h30, 8-11h30, o, o, o, a+
+Thư: o, o, o, o, o, o, o
+Mhuong: o, o, o, B, b+, b1, o
+Hảo: a, b1, o, o, o, a+, off

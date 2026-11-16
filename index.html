@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ Thống Sắp Xếp Ca Làm Việc Tự Động - Coffee & F&B</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl shadow-inner">
+          <i class="fa-solid fa-calendar-check text-yellow-300"></i>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight">AutoShift Manager</h1>
+          <p class="text-xs text-indigo-100">Hệ thống xếp ca thông minh cho Quán Cà phê & Nhà hàng</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="btnLoadSample" class="bg-white/15 hover:bg-white/25 text-white text-sm font-medium px-3.5 py-2 rounded-lg transition duration-200 flex items-center gap-2 border border-white/20 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+          <span>Nạp dữ liệu mẫu</span>
+        </button>
+        <button id="btnClearAll" class="bg-white/10 hover:bg-red-500/80 text-white text-sm font-medium px-3 py-2 rounded-lg transition duration-200 flex items-center gap-1.5 border border-white/15" title="Xóa toàn bộ">
+          <i class="fa-regular fa-trash-can"></i>
+          <span class="hidden sm:inline">Xóa hết</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- Shift Legend / Reference Card -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80">
+      <div class="flex items-center justify-between mb-3 cursor-pointer select-none" id="legendToggle">
+        <div class="flex items-center gap-2 font-semibold text-slate-700 text-sm sm:text-base">
+          <i class="fa-solid fa-circle-info text-indigo-600"></i>
+          <span>Quy định ca làm & Ràng buộc xếp ca</span>
+        </div>
+        <span class="text-xs text-slate-400 flex items-center gap-1">
+          <span id="legendToggleText">Thu gọn</span>
+          <i class="fa-solid fa-chevron-up transition-transform duration-200" id="legendChevron"></i>
+        </span>
+      </div>
+      <div id="legendContent" class="space-y-3 pt-1">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 text-xs">
+          <div class="p-2.5 rounded-xl border border-amber-200 bg-amber-50/70">
+            <span class="font-bold text-amber-800 block text-sm">Ca A / a</span>
+            <span class="text-slate-600 font-medium">08:00 ~ 15:00</span>
+            <span class="text-amber-600 block text-[11px] font-semibold mt-0.5">7 giờ (Sáng)</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-purple-200 bg-purple-50/70">
+            <span class="font-bold text-purple-800 block text-sm">Ca B / b</span>
+            <span class="text-slate-600 font-medium">15:00 ~ 22:00</span>
+            <span class="text-purple-600 block text-[11px] font-semibold mt-0.5">7 giờ (Tối)</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-sky-200 bg-sky-50/70">
+            <span class="font-bold text-sky-800 block text-sm">Ca A+ / a+</span>
+            <span class="text-slate-600 font-medium">08:00 ~ 12:00</span>
+            <span class="text-sky-600 block text-[11px] font-semibold mt-0.5">4 giờ</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-teal-200 bg-teal-50/70">
+            <span class="font-bold text-teal-800 block text-sm">Ca B+ / b+</span>
+            <span class="text-slate-600 font-medium">18:00 ~ 22:00</span>
+            <span class="text-teal-600 block text-[11px] font-semibold mt-0.5">4 giờ</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/70">
+            <span class="font-bold text-emerald-800 block text-sm">Ca B1 / b1</span>
+            <span class="text-slate-600 font-medium">12:00 ~ 18:00</span>
+            <span class="text-emerald-600 block text-[11px] font-semibold mt-0.5">6 giờ</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70">
+            <span class="font-bold text-indigo-800 block text-sm">Ca A1 / a1</span>
+            <span class="text-slate-600 font-medium">08:00 ~ 18:00</span>
+            <span class="text-indigo-600 block text-[11px] font-semibold mt-0.5">10 giờ</span>
+          </div>
+          <div class="p-2.5 rounded-xl border border-rose-200 bg-rose-50/70">
+            <span class="font-bold text-rose-800 block text-sm">Ca B2 / b2</span>
+            <span class="text-slate-600 font-medium">12:00 ~ 22:00</span>
+            <span class="text-rose-600 block text-[11px] font-semibold mt-0.5">10 giờ</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700">
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-user-gear text-indigo-500 mt-0.5"></i>
+            <span><strong>Nguyên tắc vai trò:</strong> 2 Pha chế CÓ THỂ đứng cùng nhau. Phục vụ KHÔNG BAO GIỜ đứng một mình, bắt buộc phải có Pha chế đi kèm.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-indigo-500 mt-0.5"></i>
+            <span><strong>Thời lượng & Số ca:</strong> Mỗi người từ 2 đến 6 ca/tuần. Giới hạn tối đa 7 giờ/ca (ca A1, B2 được chuẩn hóa về 7h tiêu chuẩn).</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-arrows-split-up-and-left text-indigo-500 mt-0.5"></i>
+            <span><strong>2 Khung giờ rảnh:</strong> Nhập 2 ca cách nhau bởi dấu <code>/</code> (vd: <code>12-15h / b+</code>), thuật toán tự chọn ca tối ưu nhất.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Daily Requirements (Vòng lặp Thứ 2 ~ Chủ Nhật cấu hình số người đứng) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+            <span>Cấu hình số người đứng mỗi ngày (Thứ 2 ~ Chủ Nhật)</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Mặc định mỗi ca đứng 2 người (1 Pha chế + 1 Phục vụ). Bạn có thể tùy chỉnh theo từng ngày.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <button id="btnQuick2People" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-semibold border border-indigo-200 transition">
+            <i class="fa-solid fa-rotate mr-1"></i> Đặt lại tất cả 2 người/ca
+          </button>
+        </div>
+      </div>
+
+      <!-- Days Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" id="dailyNeedsContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Step 2: Employee Registration (Pha chế & Phục vụ) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+            <span>Danh sách nhân viên & Ca đăng ký</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Nhập mã ca (A, B, A+, B+, B1, A1, B2), giờ rảnh (vd: 9h-15h), hoặc để trống / 'off' nếu nghỉ.</p>
+        </div>
+
+        <!-- Mode Tabs & Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold">
+            <button id="tabTableMode" class="px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-sm transition">
+              <i class="fa-solid fa-table-cells mr-1"></i> Nhập bảng trực quan
+            </button>
+            <button id="tabBatchMode" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+              <i class="fa-solid fa-paste mr-1"></i> Dán văn bản nhanh
+            </button>
+          </div>
+          <button id="btnAddBarista" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Thêm Pha chế
+          </button>
+          <button id="btnAddServer" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Thêm Phục vụ
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Input View -->
+      <div id="viewTableInput" class="space-y-6">
+        <!-- Pha Chế Table -->
+        <div class="border border-amber-200/80 rounded-xl overflow-hidden bg-amber-50/20 shadow-xs">
+          <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2.5 text-white flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-mug-hot"></i>
+              <span class="font-bold text-sm uppercase tracking-wide">Nhóm Pha Chế</span>
+              <span class="bg-amber-700/60 px-2 py-0.5 rounded-full text-xs font-semibold" id="countBarista">0 người</span>
+            </div>
+            <span class="text-xs text-amber-100 italic">Ưu tiên đứng quầy pha chế, có thể làm thay phục vụ</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-amber-100/60 text-slate-700 font-semibold border-b border-amber-200 text-center">
+                  <th class="p-2.5 text-left w-36 sm:w-44">Họ và Tên</th>
+                  <th class="p-2.5">Thứ 2</th>
+                  <th class="p-2.5">Thứ 3</th>
+                  <th class="p-2.5">Thứ 4</th>
+                  <th class="p-2.5">Thứ 5</th>
+                  <th class="p-2.5">Thứ 6</th>
+                  <th class="p-2.5">Thứ 7</th>
+                  <th class="p-2.5">Chủ Nhật</th>
+                  <th class="p-2.5 w-16">Xóa</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyBarista" class="divide-y divide-amber-100 bg-white">
+                <!-- Rows rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Phục Vụ Table -->
+        <div class="border border-sky-200/80 rounded-xl overflow-hidden bg-sky-50/20 shadow-xs">
+          <div class="bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2.5 text-white flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bell-concierge"></i>
+              <span class="font-bold text-sm uppercase tracking-wide">Nhóm Phục Vụ</span>
+              <span class="bg-sky-700/60 px-2 py-0.5 rounded-full text-xs font-semibold" id="countServer">0 người</span>
+            </div>
+            <span class="text-xs text-sky-100 italic">Chỉ đứng vị trí phục vụ, không thể làm thay pha chế</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-sky-100/60 text-slate-700 font-semibold border-b border-sky-200 text-center">
+                  <th class="p-2.5 text-left w-36 sm:w-44">Họ và Tên</th>
+                  <th class="p-2.5">Thứ 2</th>
+                  <th class="p-2.5">Thứ 3</th>
+                  <th class="p-2.5">Thứ 4</th>
+                  <th class="p-2.5">Thứ 5</th>
+                  <th class="p-2.5">Thứ 6</th>
+                  <th class="p-2.5">Thứ 7</th>
+                  <th class="p-2.5">Chủ Nhật</th>
+                  <th class="p-2.5 w-16">Xóa</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyServer" class="divide-y divide-sky-100 bg-white">
+                <!-- Rows rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Text Input View (Hidden by default) -->
+      <div id="viewBatchInput" class="hidden space-y-3">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
+          <p class="font-semibold text-slate-700 mb-1">Định dạng nhập nhanh:</p>
+          <pre class="bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 font-mono text-[11px] leading-relaxed">
+[Pha chế]
+Vy: 8-11h30, b+, 8-9h, 15-18h, 16-22h, off, b+
+Ánh: B, off, off, 12-15h / b+, 6-9h, b+, a+
+Mai: b1, b1, b1, 9-12h, off, off, off
+Đạt: off, off, 9-15h, 12-15h / b+, off, a+, b2
+Phú: off, a1, b, a+, a1, b1, b1
+
+[Phục vụ]
+Hương: o, o, o, a, a+, b+, off
+Huy: o, b+, b+, o, b1, o, a
+Phương: b+, 8-11h30, 8-11h30, o, o, o, a+
+Thư: o, o, o, o, o, o, o
+Mhuong: o, o, o, B, b+, b1, o
+Hảo: a, b1, o, o, o, a+, off</pre>
+        </div>
+        <textarea id="batchTextarea" rows="10" class="w-full p-3 font-mono text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Dán danh sách ca làm việc tại đây..."></textarea>
+        <div class="flex justify-end gap-2">
+          <button id="btnApplyBatch" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+            <i class="fa-solid fa-check mr-1.5"></i> Áp dụng danh sách
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Button: Schedule -->
+      <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap justify-between items-center gap-4">
+        <div class="text-xs text-slate-500">
+          <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-500"></i> Tự động phân công tối ưu và kiểm tra đầy đủ các ràng buộc</span>
+        </div>
+        <button id="btnRunSchedule" class="px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition duration-200 flex items-center gap-2 text-sm sm:text-base">
+          <i class="fa-solid fa-play"></i>
+          <span>SẮP XẾP CA TỰ ĐỘNG</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Schedule Output & Alerts (Bảng chia ca & Cảnh báo) -->
+    <div id="resultsSection" class="space-y-6">
+
+      <!-- Warnings / Shortage Alerts Panel -->
+      <div id="warningsCard" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+            <span>Thông Báo Ca Còn Thiếu & Ràng Buộc</span>
+            <span id="warningBadgeCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">0 thông báo</span>
+          </h2>
+        </div>
+        <div id="warningsList" class="space-y-2 text-xs sm:text-sm">
+          <!-- Warnings dynamically generated here -->
+        </div>
+      </div>
+
+      <!-- Main Weekly Timetable Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden" id="printableSchedule">
+        <div class="p-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4 bg-slate-50/70">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-indigo-600"></i>
+              <span>BẢNG PHÂN CHIA CA LÀM VIỆC TRONG TUẦN</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">Xếp theo thứ tự: Pha chế trước, Phục vụ sau | Cột từ Thứ 2 đến Chủ Nhật</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-medium">
+            <button id="btnExportExcel" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-file-excel"></i> Xuất Excel
+            </button>
+            <button id="btnPrint" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-print"></i> In / Xuất PDF
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-center border-collapse text-xs sm:text-sm" id="resultTable">
+            <thead>
+              <tr class="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200">
+                <th class="p-3 text-left w-40 sm:w-48 sticky left-0 bg-slate-100 z-10">Nhân viên</th>
+                <th class="p-3 w-28">Vai trò</th>
+                <th class="p-3">Thứ 2</th>
+                <th class="p-3">Thứ 3</th>
+                <th class="p-3">Thứ 4</th>
+                <th class="p-3">Thứ 5</th>
+                <th class="p-3">Thứ 6</th>
+                <th class="p-3">Thứ 7</th>
+                <th class="p-3">Chủ Nhật</th>
+                <th class="p-3 w-24">Tổng ca</th>
+                <th class="p-3 w-24">Tổng giờ</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyResult" class="divide-y divide-slate-100 bg-white">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-4 bg-slate-50/80 border-t border-slate-200 text-xs text-slate-500 flex flex-wrap justify-between items-center gap-3">
+          <div class="flex items-center gap-4 flex-wrap">
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Ca A (8:00~15:00)</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Ca B (15:00~22:00)</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Ca A+ / B+ / B1</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> OFF (Nghỉ)</span>
+            <span class="inline-flex items-center gap-1.5"><span class="text-amber-600 font-bold">*</span> 2 Pha chế cùng đứng ca</span>
+            <span class="inline-flex items-center gap-1.5"><span class="text-indigo-600 font-bold">✓</span> Chọn tối ưu từ 2 khung giờ</span>
+          </div>
+          <div>
+            <span>Quy định: 2 - 6 ca/tuần. Nghỉ ít nhất 1 ngày.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Breakdown Card (Chi tiết theo từng ngày) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-indigo-600"></i>
+          <span>Chi tiết phân công nhân sự theo từng ngày</span>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="dailyBreakdownContainer">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-8">
+    <div class="max-w-7xl mx-auto px-4">
+      Hệ thống xếp ca tự động quán cà phê / nhà hàng &copy; 2026. Đáp ứng đầy đủ quy tắc vai trò Pha chế - Phục vụ & khung giờ làm việc.
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

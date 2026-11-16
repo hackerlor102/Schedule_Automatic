@@ -1,0 +1,146 @@
+/* Custom Styles for AutoShift Manager */
+
+/* Badges for shifts */
+.badge-shift {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
+  transition: all 0.15s ease-in-out;
+}
+
+.badge-a {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-b {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #e9d5ff;
+}
+
+.badge-aplus {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.badge-bplus {
+  background-color: #ccfbf1;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.badge-b1 {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-a1 {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-b2 {
+  background-color: #ffe4e6;
+  color: #9f1239;
+  border: 1px solid #fecdd3;
+}
+
+.badge-custom {
+  background-color: #ecfeff;
+  color: #155e75;
+  border: 1px solid #a5f3fc;
+}
+
+.badge-off {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+}
+
+/* Day requirement card */
+.day-need-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.day-need-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Sticky column in table */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Print Stylesheet */
+@media print {
+  header, footer, #dailyNeedsContainer, #viewTableInput, #viewBatchInput,
+  #legendToggle, #legendContent, .no-print, button, #btnRunSchedule, #btnClearAll, #btnLoadSample {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #resultsSection, #printableSchedule {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    width: 100% !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border: 1px solid #999 !important;
+    padding: 6px !important;
+    font-size: 11pt !important;
+  }
+
+  .badge-shift {
+    border: 1px solid #444 !important;
+    background: transparent !important;
+    color: black !important;
+    font-weight: bold !important;
+  }
+}
+
